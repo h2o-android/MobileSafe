@@ -1,6 +1,7 @@
 package com.he2.mobilesafe;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -13,12 +14,14 @@ import net.tsz.afinal.http.AjaxCallBack;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.R.integer;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
+import android.content.SharedPreferences.Editor;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -65,11 +68,14 @@ public class SplashActivity extends Activity {
 		tv_splash_version.setText("版本号：" + getVersionName());
 		tv_update_info = (TextView) findViewById(R.id.tv_update_info);
 		boolean update = sp.getBoolean("update", true);
-
+		
+		//复制归属地数据库到系统
+		copyDB();
 		if (update) {
 			checkUpdate();
 		} else {
 			// 自动升级已关闭,设置定时器2秒，实现更好的动画效果
+			//不能直接让主线程sleep，因为无法显示动画
 			handler.postDelayed(new Runnable() {
 
 				@Override
@@ -83,7 +89,33 @@ public class SplashActivity extends Activity {
 		aa.setDuration(500);
 		findViewById(R.id.rl_root_splash).startAnimation(aa);
 	}
-
+	
+	/**
+	 * 复制归属地数据库到包目录下的file下面
+	 */
+	private void copyDB(){
+		File file = new File(getFilesDir(),"address.db");
+		if(file.exists() && file.length()>0){//判断文件是否存在，存在即不用复制第二次
+		
+		}else{
+			try {
+				InputStream is = getAssets().open("address.db");
+				byte[] buffer = new byte[1024];
+				FileOutputStream fos = new FileOutputStream(file);
+				int len = 0;
+				while((len=is.read(buffer))!=-1){
+					fos.write(buffer,0,len);
+				}
+				is.close();
+				fos.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+	}
+	
 	private Handler handler = new Handler() {
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
@@ -180,6 +212,7 @@ public class SplashActivity extends Activity {
 									t.printStackTrace();
 									Toast.makeText(getApplicationContext(),
 											"下载失败", 0).show();
+									enterHome();
 									super.onFailure(t, errorNo, strMsg);
 								};
 
@@ -213,7 +246,9 @@ public class SplashActivity extends Activity {
 									// 注意，这里设置必须调用这个方法，不然调用data和type分别来设置，都会导致另外一个为空
 									intent.setDataAndType(Uri.fromFile(t),
 											"application/vnd.android.package-archive");
-									startActivity(intent);
+									//startActivity(intent);
+									//当用户取消安装后，直接进入主页
+									startActivityForResult(intent,100);
 								}
 
 							});
@@ -236,7 +271,24 @@ public class SplashActivity extends Activity {
 		});
 		builder.show();
 	}
+	
 
+	/**
+	 * 当用户在安装的界面点击取消的时候，应该继续进入到主界面
+	 * @param requestCode
+	 * @param resultCode
+	 * @param data
+	 */
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (requestCode==100 && resultCode==RESULT_CANCELED) {
+			enterHome();
+		}
+	}
+	
 	/**
 	 * 检查是否有新的版本，如果有则提示更新
 	 */

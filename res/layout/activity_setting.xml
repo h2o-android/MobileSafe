@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- xmlns:he2的命名空间，是在AndroidManifest里面注册的命名空间 -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:he2="http://schemas.android.com/apk/res/com.he2.mobilesafe"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:background="#8866ff00"
+        android:gravity="center"
+        android:text="设置中心"
+        android:textColor="#000000"
+        android:textSize="22sp" />
+	
+    <!-- 自定义控件 -->
+    <com.he2.ui.SettingItemView
+        android:id="@+id/siv_update"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+         he2:title="设置自动更新"
+        he2:desc_on="设置自动更新已经开启"
+        he2:desc_off="设置自动更新已经关闭">
+    </com.he2.ui.SettingItemView>
+
+</LinearLayout>

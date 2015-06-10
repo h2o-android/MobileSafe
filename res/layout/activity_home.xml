@@ -3,8 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    
-    <TextView 
+
+    <TextView
         android:id="@+id/textView1"
         android:layout_width="match_parent"
         android:layout_height="55dip"
@@ -12,15 +12,31 @@
         android:gravity="center"
         android:text="功能列表"
         android:textColor="#000000"
-        android:textSize="22sp"/>
+        android:textSize="22sp" />
     
-<!--     <GridView 
+    <!--
+		ellipsize属性,作用是当文字长度超过textview宽度时的显示方式:
+    	android:ellipsize=”start”—–省略号显示在开头 "...pedia"
+		android:ellipsize=”end”——省略号显示在结尾  "encyc..."
+		android:ellipsize=”middle”—-省略号显示在中间 "en...dia"
+		android:ellipsize=”marquee”–以横向滚动方式显示(需获得当前焦点时)
+    -->
+
+    <com.he2.ui.FocusedTextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:text="这是跑马灯，跑马灯在这里，你在哪，快来看呀"
+        android:textSize="18sp" />
+
+    <GridView
         android:id="@+id/list_home"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="15dip"
         android:numColumns="3"
-        android:verticalSpacing="10dip"></GridView> -->
-    
+        android:verticalSpacing="10dip" >
+    </GridView>
 
 </LinearLayout>
